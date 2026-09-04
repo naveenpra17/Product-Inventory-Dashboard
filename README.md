@@ -129,8 +129,8 @@ Quick summary:
 
 ```bash
 cd backend
-mvnw test
-mvnw spring-boot:run
+mvnw.cmd test
+mvnw.cmd spring-boot:run
 ```
 
 ### Frontend
@@ -145,7 +145,7 @@ npm start
 
 ```bash
 cd backend
-mvnw test
+mvnw.cmd test
 
 cd frontend
 npm run build
@@ -167,4 +167,4 @@ npm run build
 3. 10 MB upload limit
 4. No authentication required
 5. H2 in-memory database (non-persistent across restarts)
-6. Stock Age is display-only (not server-sortable)
+6. Stock Age is dynamically calculated from Purchase Date and is server-sortable by mapping the sort to Purchase Date with the inverse direction.
