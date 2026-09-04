@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>Import Product Data</h2>
+
+<mat-dialog-content>
+  <div class="file-info">
+    <mat-icon>description</mat-icon>
+    <div>
+      <p class="file-name">{{ data.file.name }}</p>
+      <p class="file-type">{{ fileType }}</p>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+  <div *ngIf="successMessage" class="status success">
+    <mat-icon>check_circle</mat-icon>
+    <span>{{ successMessage }}</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="status error">
+    <mat-icon>error</mat-icon>
+    <div>
+      <p class="error-title">{{ errorMessage }}</p>
+      <p *ngIf="validationErrors.length" class="error-count">
+        {{ validationErrors.length }} validation error{{ validationErrors.length === 1 ? '' : 's' }} found:
+      </p>
+      <mat-list *ngIf="validationErrors.length" class="error-list">
+        <mat-list-item *ngFor="let err of validationErrors">
+          <span matListItemTitle>
+            <ng-container *ngIf="err.row">Row {{ err.row }} - </ng-container>{{ err.field || 'General' }}:
+            {{ err.message }}
+          </span>
+          <span matListItemLine *ngIf="err.suggestion">{{ err.suggestion }}</span>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="successMessage ? closeWithSuccess(importedCount) : close()">
+    {{ successMessage ? 'Done' : 'Close' }}
+  </button>
+</mat-dialog-actions>

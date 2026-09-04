@@ -1,0 +1,4 @@
+Product SKU,Product Name,Category,Purchase Date,Unit Price,Quantity
+SKU001,Laptop,Electronics,2025-01-10,750.00,5
+SKU001,Laptop,Electronics,2025-01-10,800.00,2
+SKU006,Desk Lamp,Home,invalid-date,abc,-3

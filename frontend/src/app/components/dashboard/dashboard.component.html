@@ -1,0 +1,129 @@
+<div class="dashboard-container">
+  <header class="page-header">
+    <div>
+      <h1>Product Inventory Dashboard</h1>
+      <p class="subtitle">Manage and monitor your product inventory</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="triggerImport()">
+      <mat-icon>upload_file</mat-icon>
+      Import Data
+    </button>
+    <input #fileInput type="file" accept=".xlsx,.csv" hidden (change)="onFileSelected($event)" />
+  </header>
+
+  <section class="summary-section">
+    <mat-card class="summary-card" *ngIf="!loadingSummary && !summaryError && summary">
+      <mat-card-content>
+        <p class="summary-label">Total Products</p>
+        <h2>{{ summary.totalProducts }}</h2>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card" *ngIf="!loadingSummary && !summaryError && summary">
+      <mat-card-content>
+        <p class="summary-label">Total Inventory Value</p>
+        <h2>{{ summary.totalInventoryValue | currency:'USD':'symbol':'1.2-2' }}</h2>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card" *ngIf="!loadingSummary && !summaryError && summary">
+      <mat-card-content>
+        <p class="summary-label">Average Stock Age</p>
+        <h2>{{ summary.averageStockAgeDays | number:'1.1-1' }} days</h2>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="summary-loading" *ngIf="loadingSummary">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <mat-card class="summary-card error-card" *ngIf="summaryError">
+      <mat-card-content>
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ summaryError }}</p>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <section class="table-section">
+    <div class="table-toolbar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search products</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" placeholder="SKU, name, or category" />
+        <button mat-icon-button matSuffix (click)="onSearch()" matTooltip="Search">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <div class="table-wrapper" *ngIf="!loadingProducts && !productsError">
+      <table mat-table [dataSource]="dataSource" matSort [matSortActive]="sortActive"
+             [matSortDirection]="sortDirection" (matSortChange)="onSortChange($event)">
+
+        <ng-container matColumnDef="productSku">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Product SKU</th>
+          <td mat-cell *matCellDef="let product">{{ product.productSku }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="productName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Product Name</th>
+          <td mat-cell *matCellDef="let product">{{ product.productName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+          <td mat-cell *matCellDef="let product">{{ product.category }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="purchaseDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Purchase Date</th>
+          <td mat-cell *matCellDef="let product">{{ product.purchaseDate | date:'yyyy-MM-dd' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="unitPrice">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Unit Price</th>
+          <td mat-cell *matCellDef="let product">{{ product.unitPrice | currency:'USD':'symbol':'1.2-2' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Quantity</th>
+          <td mat-cell *matCellDef="let product">{{ product.quantity }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="stockAgeDays">
+          <th mat-header-cell *matHeaderCellDef>Stock Age (Days)</th>
+          <td mat-cell *matCellDef="let product">{{ product.stockAgeDays }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-state" [attr.colspan]="displayedColumns.length">
+            No products found. Import data to get started.
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="loading-state" *ngIf="loadingProducts">
+      <mat-spinner></mat-spinner>
+      <p>Loading products...</p>
+    </div>
+
+    <div class="error-state" *ngIf="productsError">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ productsError }}</p>
+      <button mat-stroked-button color="primary" (click)="loadProducts()">Retry</button>
+    </div>
+
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </section>
+</div>

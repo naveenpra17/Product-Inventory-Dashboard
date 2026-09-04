@@ -1,0 +1,60 @@
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  mat-icon {
+    color: #1976d2;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.file-name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.file-type {
+  margin: 4px 0 0;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.875rem;
+}
+
+.status {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+
+  &.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.error {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+
+.error-title {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.error-count {
+  margin: 0 0 8px;
+}
+
+.error-list {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+mat-progress-bar {
+  margin-top: 12px;
+}
