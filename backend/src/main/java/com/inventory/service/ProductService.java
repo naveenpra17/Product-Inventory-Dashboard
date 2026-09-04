@@ -9,7 +9,9 @@ import com.inventory.repository.ProductRepository;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,8 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Page<ProductResponse> getProducts(Pageable pageable, String search) {
         Specification<Product> spec = buildSearchSpecification(search);
-        return productRepository.findAll(spec, pageable)
+        Pageable resolvedPageable = resolvePageable(pageable);
+        return productRepository.findAll(spec, resolvedPageable)
                 .map(product -> productMapper.toResponse(product, calculateStockAge(product.getPurchaseDate())));
     }
 
@@ -78,6 +81,29 @@ public class ProductService {
     public long calculateStockAge(LocalDate purchaseDate) {
         LocalDate today = LocalDate.now(clock);
         return ChronoUnit.DAYS.between(purchaseDate, today);
+    }
+
+    /**
+     * Stock age is derived from purchase date (older date = higher age), so sort direction is inverted.
+     */
+    Pageable resolvePageable(Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) {
+            return pageable;
+        }
+
+        List<Sort.Order> orders = pageable.getSort().stream()
+                .map(order -> {
+                    if ("stockAgeDays".equals(order.getProperty())) {
+                        Sort.Direction purchaseDateDirection = order.isAscending()
+                                ? Sort.Direction.DESC
+                                : Sort.Direction.ASC;
+                        return new Sort.Order(purchaseDateDirection, "purchaseDate");
+                    }
+                    return order;
+                })
+                .toList();
+
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(orders));
     }
 
     private Specification<Product> buildSearchSpecification(String search) {

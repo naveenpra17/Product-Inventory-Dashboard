@@ -90,6 +90,20 @@ class ProductControllerIntegrationTest {
     }
 
     @Test
+    void getProducts_supportsStockAgeSorting() throws Exception {
+        saveProduct("SKU001", LocalDate.of(2024, 1, 10));
+        saveProduct("SKU002", LocalDate.of(2025, 6, 1));
+
+        mockMvc.perform(get("/api/products")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "stockAgeDays,desc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].productSku").value("SKU001"))
+                .andExpect(jsonPath("$.content[1].productSku").value("SKU002"));
+    }
+
+    @Test
     void getSummary_returnsAggregates() throws Exception {
         saveProduct("SKU001", LocalDate.of(2025, 1, 10), new BigDecimal("100.00"), 2);
         saveProduct("SKU002", LocalDate.of(2025, 2, 1), new BigDecimal("50.00"), 4);

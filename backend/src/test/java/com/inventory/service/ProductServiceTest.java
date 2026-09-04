@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -98,5 +100,23 @@ class ProductServiceTest {
         assertThat(page.getContent()).hasSize(1);
         assertThat(page.getContent().get(0).getStockAgeDays()).isEqualTo(3);
         assertThat(page.getContent().get(0).getProductSku()).isEqualTo("SKU001");
+    }
+
+    @Test
+    void resolvePageable_stockAgeAsc_sortsByPurchaseDateDesc() {
+        Pageable input = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "stockAgeDays"));
+
+        Pageable resolved = productService.resolvePageable(input);
+
+        assertThat(resolved.getSort().getOrderFor("purchaseDate").getDirection()).isEqualTo(Sort.Direction.DESC);
+    }
+
+    @Test
+    void resolvePageable_stockAgeDesc_sortsByPurchaseDateAsc() {
+        Pageable input = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "stockAgeDays"));
+
+        Pageable resolved = productService.resolvePageable(input);
+
+        assertThat(resolved.getSort().getOrderFor("purchaseDate").getDirection()).isEqualTo(Sort.Direction.ASC);
     }
 }
