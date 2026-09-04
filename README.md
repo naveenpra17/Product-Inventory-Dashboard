@@ -111,6 +111,18 @@ docker-compose up --build
 | Frontend | http://localhost:4200 |
 | Backend API | http://localhost:8080/api |
 
+## Deploy to Render + Vercel
+
+See **[DEPLOY.md](DEPLOY.md)** for step-by-step instructions to deploy:
+- **Backend** → Render (Docker + PostgreSQL)
+- **Frontend** → Vercel (Angular)
+
+Quick summary:
+1. Deploy backend on Render using `render.yaml` or manual Docker setup
+2. Deploy frontend on Vercel with root directory `frontend`
+3. Set Vercel env `API_URL=https://your-backend.onrender.com`
+4. Set Render env `CORS_ALLOWED_ORIGINS=https://your-app.vercel.app`
+
 ## How to Run Locally
 
 ### Backend
